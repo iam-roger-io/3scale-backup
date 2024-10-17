@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# Verifica se o nome da namespace foi passado
+while getopts "n:" opt; do
+  case $opt in
+    n) namespace=$OPTARG ;;
+    *) echo "Uso: $0 -n <namespace>" && exit 1 ;;
+  esac
+done
+
+if [ -z "$namespace" ]; then
+  echo "Erro: Nome da namespace não foi informado."
+  echo "Uso: $0 -n <namespace>"
+  exit 1
+fi
+
+oc project $namespace
+
 echo "passo 1: Copy the MySQL dump to the system-mysql pod:"
 #9.5.2. Restoring system-mysql
 oc cp ./dump/system-mysql-backup.gz $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq '.items[0].metadata.name' -r):/var/lib/mysql

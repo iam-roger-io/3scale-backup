@@ -1,5 +1,21 @@
 #!/bin/bash
 
+# Verifica se o nome da namespace foi passado
+while getopts "n:" opt; do
+  case $opt in
+    n) namespace=$OPTARG ;;
+    *) echo "Uso: $0 -n <namespace>" && exit 1 ;;
+  esac
+done
+
+if [ -z "$namespace" ]; then
+  echo "Erro: Nome da namespace não foi informado."
+  echo "Uso: $0 -n <namespace>"
+  exit 1
+fi
+
+oc project $namespace
+
 #9.5.5. Ensuring information consistency between backend and system
 #9.5.5.1. Managing the deployment configuration for backend-redis
 
