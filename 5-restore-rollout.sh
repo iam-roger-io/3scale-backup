@@ -29,3 +29,14 @@ oc rollout status dc/system-sphinx -n "$namespace"
 
 oc rollout latest dc/apicast-production -n "$namespace"
 oc rollout status dc/apicast-staging -n "$namespace"
+
+oc rollout latest dc/system-sidekiq
+oc rollout status dc/system-sidekiq
+
+oc rollout latest dc/zync
+oc rollout status dc/zync
+
+oc rollout latest dc/zync-que
+oc rollout status dc/zync-que
+
+oc rsh $(oc get pods -l 'deploymentConfig=system-sidekiq' -o json | jq '.items[0].metadata.name' -r) bash -c 'bundle exec rake zync:resync:domains'
