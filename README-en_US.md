@@ -4,6 +4,14 @@ Scripts for implementing backup and restore in 3scale version 2.13, which uses t
 
 This script is based on the official documentation available at: [Chapter 9. Backup and Restore of 3scale API Management](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.14/html/operating_red_hat_3scale_api_management/threescale-backup-restore)
 
+## Pré Requisitos:
+
+O script foi testado com:
+
+- yq version v4.43.1
+- jq version jq-1.7.1
+
+
 ## Backup Process
 
 The entire backup process is executed by the following script:
