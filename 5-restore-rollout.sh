@@ -23,7 +23,7 @@ oc patch dc/system-app -n "$namespace" -p '{"spec": {"replicas": 1}}'
 oc rollout latest dc/system-app -n "$namespace"
 oc rollout status dc/system-app -n "$namespace"
 
-echo "dc/system-searchd"
+echo "dc/system-sphinx"
 oc rollout latest dc/system-sphinx -n "$namespace"
 oc rollout status dc/system-sphinx -n "$namespace"
 
