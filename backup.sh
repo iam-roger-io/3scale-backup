@@ -3,8 +3,8 @@
 echo "########################################################################"
 echo "## B A C K U P   F O R   3 S C A L E"
 echo "## Starting backup of 3scale API Manager:"
-echo "## Script for version 2.13"
-echo "Reference documentation: https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/2.13/html/operating_3scale/threescale-backup-restore#threescale-backup-restore"
+echo "## Script for version 2.14"
+echo "Reference documentation: https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/2.14/html/operating_red_hat_3scale_api_management/threescale-backup-restore"
 echo "########################################################################"
 
 # Verifica se o nome da namespace foi passado
