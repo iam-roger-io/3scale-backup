@@ -10,7 +10,7 @@ Este script se baseia na documentação oficial disponível em: [Capítulo 9. Ba
 
 O script foi testado com:
 
-- yq versão version v4.43.1
+- yq versão v4.43.1
 - jq versão jq-1.7.1
 
 ## Processo de Backup
