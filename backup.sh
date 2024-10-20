@@ -37,22 +37,24 @@ echo "## 9.4.6: Backing up OpenShift secrets and ConfigMaps"
 echo "Step 1: 9.4.6.1. OpenShift secrets "
 mkdir -p ./ocp/secrets/
 # Secrets
-oc get secrets system-smtp -n "$namespace" -o json > ./ocp/secrets/system-smtp.json
-oc get secrets system-seed -n "$namespace" -o json > ./ocp/secrets/system-seed.json
-oc get secrets system-database -n "$namespace" -o json > ./ocp/secrets/system-database.json
-oc get secrets backend-internal-api -n "$namespace" -o json > ./ocp/secrets/backend-internal-api.json
-oc get secrets system-events-hook -n "$namespace" -o json > ./ocp/secrets/system-events-hook.json
-oc get secrets system-app -n "$namespace" -o json > ./ocp/secrets/system-app.json
-oc get secrets system-recaptcha -n "$namespace" -o json > ./ocp/secrets/system-recaptcha.json
-oc get secrets system-redis -n "$namespace" -o json > ./ocp/secrets/system-redis.json
-oc get secrets zync -n "$namespace" -o json > ./ocp/secrets/zync.json
-oc get secrets system-master-apicast -n "$namespace" -o json > ./ocp/secrets/system-master-apicast.json
+
+
+oc get secrets system-smtp -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - > ./ocp/secrets/system-smtp.yaml
+oc get secrets system-seed -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-seed.yaml
+oc get secrets system-database -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >   ./ocp/secrets/system-database.yaml
+oc get secrets backend-internal-api -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - > ./ocp/secrets/backend-internal-api.yaml
+oc get secrets system-events-hook -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-events-hook.yaml
+oc get secrets system-app -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-app.yaml
+oc get secrets system-recaptcha -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-recaptcha.yaml
+oc get secrets system-redis -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-redis.yaml
+oc get secrets zync -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/zync.yaml
+oc get secrets system-master-apicast -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-master-apicast.yaml
 
 # Config Maps
 mkdir -p ./ocp/configmap/
 echo "Step 2: 9.4.6.2. ConfigMaps"
-oc get configmaps system-environment -n "$namespace" -o json > ./ocp/configmap/system-environment.json
-oc get configmaps apicast-environment -n "$namespace" -o json > ./ocp/configmap/apicast-environment.json
+oc get configmaps system-environment -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences)' - >  ./ocp/configmap/system-environment.yaml
+oc get configmaps apicast-environment -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences)' - >  ./ocp/configmap/apicast-environment.yaml
 
 echo " "
 echo "## 9.4: Backing up system databases"

@@ -1,9 +1,17 @@
 
 # README.md
 
+
 Scripts para a implementação de backup e restore no 3scale versão 2.13, que utiliza as bases de dados geradas pelo Operator.
 
 Este script se baseia na documentação oficial disponível em: [Capítulo 9. Backup e restore do 3scale API Management](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.14/html/operating_red_hat_3scale_api_management/threescale-backup-restore)
+
+## Pré Requisitos:
+
+O script foi testado com:
+
+- yq versão version v4.43.1
+- jq jq-1.7.1
 
 ## Processo de Backup
 
