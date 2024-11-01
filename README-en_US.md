@@ -8,7 +8,7 @@ This script is based on the official documentation available at: [Chapter 9. Bac
 
 O script foi testado com:
 
-- yq version v4.43.1
+- yq version v4.43.1 (https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64.tar.gz)
 - jq version jq-1.7.1
 
 
