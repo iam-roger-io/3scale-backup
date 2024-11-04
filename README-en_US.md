@@ -29,8 +29,29 @@ The script will generate two folders:
 
 The restore procedure involves sequentially executing the following scripts:
 
-- 1-restore-secrets.sh -n <3SCALE NAMESPACE> 
-- 2-restore-system-database.sh -n <3SCALE NAMESPACE> 
-- 3-restore-zync-database.sh -n <3SCALE NAMESPACE> -d <API MANAGER NAME : This parameter specifies the name of the API Manager resource as defined in the APIcast CRD (Custom Resource Definition).>
-- 4-restore-redis.sh -n <3SCALE NAMESPACE> 
-- 5-restore-rollout.sh -n <3SCALE NAMESPACE> 
+- 1-restore-secrets.sh 
+```
+./1-restore-secrets.sh -n <3SCALE NAMESPACE> 
+```
+
+- 2-restore-system-database.sh
+```
+./2-restore-system-database.sh -n <3SCALE NAMESPACE> 
+```
+
+- 3-restore-zync-database.sh
+```
+./3-restore-zync-database.sh -n <3SCALE NAMESPACE> -d <API MANAGER NAME>
+# API MANAGER NAME: : This parameter specifies the name of the API Manager resource as defined in the APIcast CRD (Custom Resource Definition).
+```
+
+
+- 4-restore-redis.sh
+```
+./4-restore-redis.sh -n <3SCALE NAMESPACE>
+```
+  
+- 5-restore-rollout.sh
+```
+./5-restore-rollout.sh -n <3SCALE NAMESPACE>
+```
