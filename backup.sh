@@ -48,22 +48,22 @@ echo "Step 1: 9.4.6.1. OpenShift secrets "
 mkdir -p ./ocp/secrets/
 
 # Secrets
-oc get secrets system-smtp -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - > ./ocp/secrets/system-smtp.$output_format
-oc get secrets system-seed -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-seed.$output_format
-oc get secrets system-database -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >   ./ocp/secrets/system-database.$output_format
-oc get secrets backend-internal-api -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - > ./ocp/secrets/backend-internal-api.$output_format
-oc get secrets system-events-hook -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-events-hook.$output_format
-oc get secrets system-app -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-app.$output_format
-oc get secrets system-recaptcha -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-recaptcha.$output_format
-oc get secrets system-redis -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-redis.$output_format
-oc get secrets zync -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/zync.$output_format
-oc get secrets system-master-apicast -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid)' - >  ./ocp/secrets/system-master-apicast.$output_format
+oc get secrets system-smtp -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - > ./ocp/secrets/system-smtp.$output_format
+oc get secrets system-seed -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-seed.$output_format
+oc get secrets system-database -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >   ./ocp/secrets/system-database.$output_format
+oc get secrets backend-internal-api -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - > ./ocp/secrets/backend-internal-api.$output_format
+oc get secrets system-events-hook -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-events-hook.$output_format
+oc get secrets system-app -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-app.$output_format
+oc get secrets system-recaptcha -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-recaptcha.$output_format
+oc get secrets system-redis -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-redis.$output_format
+oc get secrets zync -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/zync.$output_format
+oc get secrets system-master-apicast -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-master-apicast.$output_format
 
 # Config Maps
 mkdir -p ./ocp/configmap/
 echo "Step 2: 9.4.6.2. ConfigMaps"
-oc get configmaps system-environment -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences)' - >  ./ocp/configmap/system-environment.$output_format
-oc get configmaps apicast-environment -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences)' - >  ./ocp/configmap/apicast-environment.$output_format
+oc get configmaps system-environment -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences, .metadata.namespace)' - >  ./ocp/configmap/system-environment.$output_format
+oc get configmaps apicast-environment -n "$namespace" -o "$output_format" | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences, .metadata.namespace)' - >  ./ocp/configmap/apicast-environment.$output_format
 
 echo " "
 echo "## 9.4: Backing up system databases"
