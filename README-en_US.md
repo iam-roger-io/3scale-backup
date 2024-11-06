@@ -4,6 +4,14 @@ Scripts for implementing backup and restore in 3scale version 2.13, which uses t
 
 This script is based on the official documentation available at: [Chapter 9. Backup and Restore of 3scale API Management](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.14/html/operating_red_hat_3scale_api_management/threescale-backup-restore)
 
+## Pré Requisitos:
+
+O script foi testado com:
+
+- yq version v4.43.1 (https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64.tar.gz)
+- jq version jq-1.7.1
+
+
 ## Backup Process
 
 The entire backup process is executed by the following script:
@@ -21,8 +29,30 @@ The script will generate two folders:
 
 The restore procedure involves sequentially executing the following scripts:
 
-- 1-restore-secrets.sh
+- 1-restore-secrets.sh 
+```
+./1-restore-secrets.sh -n <3SCALE NAMESPACE> 
+```
+
 - 2-restore-system-database.sh
+```
+./2-restore-system-database.sh -n <3SCALE NAMESPACE> 
+```
+
 - 3-restore-zync-database.sh
-- 4-restore-redis.sh 
+```
+./3-restore-zync-database.sh -n <3SCALE NAMESPACE> -d <API MANAGER NAME>
+# API MANAGER NAME: : This parameter specifies the name of the API Manager resource as defined in the APIcast CRD (Custom Resource Definition).
+```
+
+
+- 4-restore-redis.sh
+```
+./4-restore-redis.sh -n <3SCALE NAMESPACE>
+```
+  
 - 5-restore-rollout.sh
+```
+./5-restore-rollout.sh -n <3SCALE NAMESPACE>
+```
+> *IMPORTANT:* After executing the *1-restore-secrets.sh* script, the API Manager must be installed before executing the other scripts.
