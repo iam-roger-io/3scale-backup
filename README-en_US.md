@@ -55,3 +55,4 @@ The restore procedure involves sequentially executing the following scripts:
 ```
 ./5-restore-rollout.sh -n <3SCALE NAMESPACE>
 ```
+> *IMPORTANT:* After executing the *1-restore-secrets.sh* script, the API Manager must be installed before executing the other scripts.

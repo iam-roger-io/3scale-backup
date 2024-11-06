@@ -38,3 +38,5 @@ O procedimento de restore consiste na execução sequencial dos scripts:
 | `3-restore-zync-database.sh`   | `./3-restore-zync-database.sh -n <NOME DA NAMESPACE DO 3SCALE> -d <NOME DO API MANAGER : - Este parâmetro especifica o nome do API Manager conforme definido no APIcast CRD (Custom Resource Definition).>`      |
 | `4-restore-redis.sh`       | `./4-restore-redis.sh -n <NOME DA NAMESPACE DO 3SCALE>`                           |
 | `5-restore-rollout.sh`       | `./5-restore-rollout.sh -n <NOME DA NAMESPACE DO 3SCALE>`                           |
+
+> *IMPORTANT:* Após execução do script *1-restore-secrets.sh*, o API Manager deve ser instalado antes da execução dos demais scripts.
