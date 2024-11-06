@@ -10,8 +10,8 @@ Este script se baseia na documentação oficial disponível em: [Capítulo 9. Ba
 
 O script foi testado com:
 
-- yq versão version v4.43.1
-- jq jq-1.7.1
+- yq versão v4.43.1 (https://github.com/mikefarah/yq/releases/download/v4.43.1/yq_linux_amd64.tar.gz)
+- jq versão jq-1.7.1
 
 ## Processo de Backup
 
@@ -35,6 +35,8 @@ O procedimento de restore consiste na execução sequencial dos scripts:
 |----------------------------|--------------------------------------------------|
 | `1-restore-secrets.sh`     | `./1-restore-secrets.sh -n <NOME DA NAMESPACE DO 3SCALE>`                         |
 | `2-restore-system-database.sh` | `./2-restore-system-database.sh -n <NOME DA NAMESPACE DO 3SCALE>`             |
-| `3-restore-zync-database.sh`   | `./3-restore-zync-database.sh -n <NOME DA NAMESPACE DO 3SCALE> -d <NOME DO API MANAGER>`               |
+| `3-restore-zync-database.sh`   | `./3-restore-zync-database.sh -n <NOME DA NAMESPACE DO 3SCALE> -d <NOME DO API MANAGER : - Este parâmetro especifica o nome do API Manager conforme definido no APIcast CRD (Custom Resource Definition).>`      |
 | `4-restore-redis.sh`       | `./4-restore-redis.sh -n <NOME DA NAMESPACE DO 3SCALE>`                           |
 | `5-restore-rollout.sh`       | `./5-restore-rollout.sh -n <NOME DA NAMESPACE DO 3SCALE>`                           |
+
+> *IMPORTANT:* Após execução do script *1-restore-secrets.sh*, o API Manager deve ser instalado antes da execução dos demais scripts.
