@@ -16,7 +16,7 @@ El script fue probado con:
 Todo el proceso de backup se ejecuta mediante el siguiente script:
 
 ```
-./backup.sh -n <NOME DA NAMESPACE>
+./backup.sh -n <NOMBRE DEL NAMESPACE DE 3SCALE>
 ```
 
 El script generará dos carpetas:
