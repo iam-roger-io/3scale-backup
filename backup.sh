@@ -39,22 +39,22 @@ mkdir -p ./ocp/secrets/
 # Secrets
 
 
-oc get secrets system-smtp -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - > ./ocp/secrets/system-smtp.yaml
-oc get secrets system-seed -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-seed.yaml
-oc get secrets system-database -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >   ./ocp/secrets/system-database.yaml
-oc get secrets backend-internal-api -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - > ./ocp/secrets/backend-internal-api.yaml
-oc get secrets system-events-hook -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-events-hook.yaml
-oc get secrets system-app -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-app.yaml
-oc get secrets system-recaptcha -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-recaptcha.yaml
-oc get secrets system-redis -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-redis.yaml
-oc get secrets zync -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/zync.yaml
-oc get secrets system-master-apicast -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-master-apicast.yaml
+oc get secrets system-smtp -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - > ./ocp/secrets/system-smtp.yaml
+oc get secrets system-seed -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-seed.yaml
+oc get secrets system-database -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >   ./ocp/secrets/system-database.yaml
+oc get secrets backend-internal-api -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - > ./ocp/secrets/backend-internal-api.yaml
+oc get secrets system-events-hook -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-events-hook.yaml
+oc get secrets system-app -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-app.yaml
+oc get secrets system-recaptcha -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-recaptcha.yaml
+oc get secrets system-redis -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-redis.yaml
+oc get secrets zync -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/zync.yaml
+oc get secrets system-master-apicast -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-master-apicast.yaml
 
 # Config Maps
 mkdir -p ./ocp/configmap/
 echo "Step 2: 9.4.6.2. ConfigMaps"
-oc get configmaps system-environment -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences, .metadata.namespace)' - >  ./ocp/configmap/system-environment.yaml
-oc get configmaps apicast-environment -n "$namespace" -o yaml | yq eval 'del(.metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences, .metadata.namespace)' - >  ./ocp/configmap/apicast-environment.yaml
+oc get configmaps system-environment -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences, .metadata.namespace)' - >  ./ocp/configmap/system-environment.yaml
+oc get configmaps apicast-environment -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences, .metadata.namespace)' - >  ./ocp/configmap/apicast-environment.yaml
 
 echo " "
 echo "## 9.4: Backing up system databases"
@@ -73,3 +73,15 @@ oc cp -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=system-
 
 echo "Step 7: 9.4.5. Backing up zync-database"
 oc rsh -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=zync-database' -o json | jq -r '.items[0].metadata.name') bash -c 'pg_dump zync_production' | gzip > ./dump/zync-database-backup.gz
+
+# Backup apimanager-crd
+echo "Step 8: Backing up APIManager CRD"
+NAME=$(oc get apimanager -n 3scale-amp -o jsonpath='{.items[0].metadata.name}')
+
+oc get apimanager -n "$namespace" "$NAME" -o yaml > ./ocp/apimanager-crd.yaml
+
+yq eval 'del(.metadata.creationTimestamp, .metadata.generation, .metadata.namespace, .metadata.resourceVersion, .metadata.uid, .status)' -i "./ocp/apimanager-crd.yaml"
+
+# Backup tenants crd
+
+./backup-tenants-crd.sh -n "$namespace"
