@@ -22,7 +22,7 @@ The entire backup process is executed by the following script:
 
 The script will generate two folders:
 
-- *./ocp/*: Contains the secrets and configmaps obtained during the backup process.
+- *./ocp/*: Contains the secrets, configmaps and CRDs obtained during the backup process.
 - *./dump/*: Holds the database and filesystem dumps from the system-store.
 
 ## Restore
