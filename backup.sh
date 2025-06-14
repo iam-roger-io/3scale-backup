@@ -76,7 +76,7 @@ oc rsh -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=zync-d
 
 # Backup apimanager-crd
 echo "Step 8: Backing up APIManager CRD"
-NAME=$(oc get apimanager -n 3scale-amp -o jsonpath='{.items[0].metadata.name}')
+NAME=$(oc get apimanager -n "$namespace" -o jsonpath='{.items[0].metadata.name}')
 
 oc get apimanager -n "$namespace" "$NAME" -o yaml > ./ocp/apimanager-crd.yaml
 
