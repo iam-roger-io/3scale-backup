@@ -3,11 +3,10 @@
 echo "########################################################################"
 echo "## B A C K U P   F O R   3 S C A L E"
 echo "## Starting backup of 3scale API Manager:"
-echo "## Script for version 2.14"
-echo "Reference documentation: https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/2.14/html/operating_red_hat_3scale_api_management/threescale-backup-restore"
+echo "## Script for version 2.15"
+echo "Reference documentation: https://docs.redhat.com/en/documentation/red_hat_3scale_api_management/2.15/html/operating_red_hat_3scale_api_management/threescale-backup-restore"
 echo "########################################################################"
 
-# Verifica se o nome da namespace foi passado
 while getopts "n:" opt; do
   case $opt in
     n) namespace=$OPTARG ;;
@@ -21,23 +20,12 @@ if [ -z "$namespace" ]; then
   exit 1
 fi
 
-# Verifica se a pasta .ocp existe
-if [ -d "./ocp" ]; then
-    # Se existe, apaga a pasta
-    rm -rf ./ocp -rf
-fi
-
-if [ -d "./dump" ]; then
-    # Se existe, apaga a pasta
-    rm -rf ./dump -rf
-fi
-
+if [ -d "./ocp" ]; then rm -rf ./ocp -rf; fi
+if [ -d "./dump" ]; then rm -rf ./dump -rf; fi
 
 echo "## 9.4.6: Backing up OpenShift secrets and ConfigMaps"
 echo "Step 1: 9.4.6.1. OpenShift secrets "
 mkdir -p ./ocp/secrets/
-# Secrets
-
 
 oc get secrets system-smtp -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - > ./ocp/secrets/system-smtp.yaml
 oc get secrets system-seed -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-seed.yaml
@@ -50,7 +38,6 @@ oc get secrets system-redis -n "$namespace" -o yaml | yq eval 'del(.metadata.nam
 oc get secrets zync -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/zync.yaml
 oc get secrets system-master-apicast -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.namespace)' - >  ./ocp/secrets/system-master-apicast.yaml
 
-# Config Maps
 mkdir -p ./ocp/configmap/
 echo "Step 2: 9.4.6.2. ConfigMaps"
 oc get configmaps system-environment -n "$namespace" -o yaml | yq eval 'del(.metadata.namespace, .metadata.creationTimestamp, .metadata.resourceVersion, .metadata.uid, .metadata.ownerReferences, .metadata.namespace)' - >  ./ocp/configmap/system-environment.yaml
@@ -59,29 +46,38 @@ oc get configmaps apicast-environment -n "$namespace" -o yaml | yq eval 'del(.me
 echo " "
 echo "## 9.4: Backing up system databases"
 mkdir ./dump
+
 echo "Step 3: 9.4.1. Backing up system-mysql"
-oc rsh -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysqldump --single-transaction -hsystem-mysql -uroot system' | gzip > ./dump/system-mysql-backup.gz
+oc rsh -n "$namespace" $(oc get pods -n "$namespace" -l 'deployment=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysqldump --single-transaction -hsystem-mysql -uroot system' | gzip > ./dump/system-mysql-backup.gz
 
 echo "Step 4: 9.4.2. Backing up system-storage"
-oc rsync -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=system-app' -o json | jq '.items[0].metadata.name' -r):/opt/system/public/system ./dump
+oc rsync -n "$namespace" $(oc get pods -n "$namespace" -l 'deployment=system-app' -o json | jq '.items[0].metadata.name' -r):/opt/system/public/system ./dump
 
 echo "Step 5: 9.4.3. Backing up backend-redis"
-oc cp -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=backend-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb ./dump/backend-redis-dump.rdb
+oc cp -n "$namespace" $(oc get pods -n "$namespace" -l 'deployment=backend-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb ./dump/backend-redis-dump.rdb
 
-echo "Step 6: 9.4.4. Backing up system-redis" 
-oc cp -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=system-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb ./dump/system-redis-dump.rdb
+echo "Step 6: 9.4.4. Backing up system-redis"
+oc cp -n "$namespace" $(oc get pods -n "$namespace" -l 'deployment=system-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb ./dump/system-redis-dump.rdb
 
 echo "Step 7: 9.4.5. Backing up zync-database"
-oc rsh -n "$namespace" $(oc get pods -n "$namespace" -l 'deploymentConfig=zync-database' -o json | jq -r '.items[0].metadata.name') bash -c 'pg_dump zync_production' | gzip > ./dump/zync-database-backup.gz
+oc rsh -n "$namespace" $(oc get pods -n "$namespace" -l 'deployment=zync-database' -o json | jq -r '.items[0].metadata.name') bash -c 'pg_dump zync_production' | gzip > ./dump/zync-database-backup.gz
 
-# Backup apimanager-crd
 echo "Step 8: Backing up APIManager CRD"
-NAME=$(oc get apimanager -n 3scale-amp -o jsonpath='{.items[0].metadata.name}')
+TENANT=$(oc get apimanager -A -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | head -n1)
 
-oc get apimanager -n "$namespace" "$NAME" -o yaml > ./ocp/apimanager-crd.yaml
+if [ -z "$TENANT" ]; then
+    echo "❌ Nenhum APIManager encontrado!"
+    exit 1
+fi
+
+echo "📌 APIManager  encontrado: $TENANT"
+
+# agora precisamos descobrir a namespace real desse tenant
+APINS=$(oc get apimanager -A -o jsonpath="{range .items[?(@.metadata.name=='$TENANT')]}{.metadata.namespace}{'\n'}{end}" | head -n1)
+
+oc get apimanager -n "$APINS" "$TENANT" -o yaml > ./ocp/apimanager-crd.yaml
 
 yq eval 'del(.metadata.creationTimestamp, .metadata.generation, .metadata.namespace, .metadata.resourceVersion, .metadata.uid, .status)' -i "./ocp/apimanager-crd.yaml"
 
-# Backup tenants crd
-
-./backup-tenants-crd.sh -n "$namespace"
+#Reavaliar
+#./backup-tenants-crd.sh -n "$namespace"

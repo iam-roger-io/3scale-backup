@@ -1,8 +1,8 @@
 # README.md
 
-Scripts para la implementación de backup y restore en 3scale versión 2.14, que utiliza las bases de datos generadas por el Operator.
+Scripts para la implementación de backup y restore en 3scale versión 2.15, que utiliza las bases de datos generadas por el Operator.
 
-Este script se basa en la documentación oficial disponible en: [Capítulo 9. Backup y restore de 3scale API Management](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.14/html/operating_red_hat_3scale_api_management/threescale-backup-restore)
+Este script se basa en la documentación oficial disponible en: [Capítulo 9. Backup y restore de 3scale API Management](https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.15/html/operating_red_hat_3scale_api_management/threescale-backup-restore)
 
 ## Requisitos previos:
 

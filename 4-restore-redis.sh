@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Verifica se o nome da namespace foi passado
 while getopts "n:" opt; do
   case $opt in
     n) namespace=$OPTARG ;;
@@ -14,10 +13,11 @@ if [ -z "$namespace" ]; then
   exit 1
 fi
 
-oc project $namespace
+oc project "$namespace"
 
-# 9.5.5. Ensuring information consistency between backend and system
-# 9.5.5.1. Managing the deployment configuration for backend-redis
+##
+## 9.5.5. Ensuring consistency backend/system
+##
 
 echo "Step 1/38"
 oc get configmap redis-config -o yaml > /tmp/tmp3.yaml
@@ -32,52 +32,33 @@ echo "Step 4/38"
 oc apply -f /tmp/tmp3.yaml
 
 echo "Step 5/38"
-oc rollout latest dc/backend-redis
+oc rollout restart deployment/backend-redis
 
 echo "Step 6/38"
-oc rollout status dc/backend-redis
+oc rollout status deployment/backend-redis
 
 echo "Step 7/38"
-oc rsh $(oc get pods -l 'deploymentConfig=backend-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
+oc rsh $(oc get pods -l 'deployment=backend-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
 
 echo "Step 8/38"
-oc rsh $(oc get pods -l 'deploymentConfig=backend-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
+oc rsh $(oc get pods -l 'deployment=backend-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
 
 echo "Step 9/38"
-oc cp ./dump/backend-redis-dump.rdb $(oc get pods -l 'deploymentConfig=backend-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb
+oc cp ./dump/backend-redis-dump.rdb $(oc get pods -l 'deployment=backend-redis' -o json | jq -r '.items[0].metadata.name'):/var/lib/redis/data/dump.rdb
 
 echo "Step 10/38"
-oc rollout latest dc/backend-redis
+oc rollout restart deployment/backend-redis
 
 echo "Step 11/38"
-oc rollout status dc/backend-redis
+oc rollout status deployment/backend-redis
 
 echo "Step 12/38"
-oc rsh $(oc get pods -l 'deploymentConfig=backend-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'redis-cli BGREWRITEAOF'
+oc rsh $(oc get pods -l 'deployment=backend-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'redis-cli BGREWRITEAOF'
 
 echo "Step 13/38"
-oc rsh $(oc get pods -l 'deploymentConfig=backend-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'redis-cli info' | grep aof_rewrite_in_progress
+oc rsh $(oc get pods -l 'deployment=backend-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'redis-cli info' | grep aof_rewrite_in_progress
 
-# 14-Uncomment SAVE commands in the redis-config configmap:
-echo "Step 14/38"
-oc get configmap redis-config -o yaml > /tmp/tmp3.yaml
-
-echo "Step 15/38"
-sed -i 's/#save /save /g' /tmp/tmp3.yaml
-
-echo "Step 16/38"
-sed -i 's/appendonly no/appendonly yes/g' /tmp/tmp3.yaml
-
-echo "Step 17/38"
-oc apply -f /tmp/tmp3.yaml
-
-echo "Step 18/38"
-oc rollout latest dc/backend-redis
-
-echo "Step 19/38"
-oc rollout status dc/backend-redis
-
-# 9.5.5.2. Managing the deployment configuration for system-redis
+# system-redis
 echo "Step 20/38"
 oc get configmap redis-config -o yaml > /tmp/tmp4.yaml
 
@@ -91,31 +72,31 @@ echo "Step 23/38"
 oc apply -f /tmp/tmp4.yaml
 
 echo "Step 24/38"
-oc rollout latest dc/system-redis
+oc rollout restart deployment/system-redis
 
 echo "Step 25/38"
-oc rollout status dc/system-redis
+oc rollout status deployment/system-redis
 
 echo "Step 26/38"
-oc rsh $(oc get pods -l 'deploymentConfig=system-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
+oc rsh $(oc get pods -l 'deployment=system-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'mv ${HOME}/data/dump.rdb ${HOME}/data/dump.rdb-old'
 
 echo "Step 27/38"
-oc rsh $(oc get pods -l 'deploymentConfig=system-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
+oc rsh $(oc get pods -l 'deployment=system-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'mv ${HOME}/data/appendonly.aof ${HOME}/data/appendonly.aof-old'
 
 echo "Step 28/38"
-oc cp ./dump/system-redis-dump.rdb $(oc get pods -l 'deploymentConfig=system-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb
+oc cp ./dump/system-redis-dump.rdb $(oc get pods -l 'deployment=system-redis' -o json | jq -r '.items[0].metadata.name'):/var/lib/redis/data/dump.rdb
 
 echo "Step 29/38"
-oc rollout latest dc/system-redis
+oc rollout restart deployment/system-redis
 
 echo "Step 30/38"
-oc rollout status dc/system-redis
+oc rollout status deployment/system-redis
 
 echo "Step 31/38"
-oc rsh $(oc get pods -l 'deploymentConfig=system-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'redis-cli BGREWRITEAOF'
+oc rsh $(oc get pods -l 'deployment=system-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'redis-cli BGREWRITEAOF'
 
 echo "Step 32/38"
-oc rsh $(oc get pods -l 'deploymentConfig=system-redis' -o json | jq '.items[0].metadata.name' -r) bash -c 'redis-cli info' | grep aof_rewrite_in_progress
+oc rsh $(oc get pods -l 'deployment=system-redis' -o json | jq -r '.items[0].metadata.name') bash -c 'redis-cli info' | grep aof_rewrite_in_progress
 
 echo "Step 33/38"
 oc get configmap redis-config -o yaml > /tmp/tmp5.yaml
@@ -130,7 +111,7 @@ echo "Step 36/38"
 oc apply -f /tmp/tmp5.yaml
 
 echo "Step 37/38"
-oc rollout latest dc/system-redis
+oc rollout restart deployment/system-redis
 
 echo "Step 38/38"
-oc rollout status dc/system-redis
+oc rollout status deployment/system-redis
